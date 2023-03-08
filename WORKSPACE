@@ -32,7 +32,7 @@ rivos_dependencies()
 # Rust rules and toolchains
 #
 
-load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_repository_set", "rustfmt_toolchain_repository")
 
 rules_rust_dependencies()
 
@@ -41,11 +41,21 @@ rules_rust_dependencies()
 # date. For Salus, we use the nightly build to take advantage of some
 # nightly-only language features, but we keep it stable and only update
 # it once per month.
-rust_register_toolchains(
-    edition = "2021",
-    extra_target_triples = ["riscv64gc-unknown-none-elf"],
-    iso_date = "2023-2-26",
+rust_repository_set(
+	name = "rust_linux_x86_64",
+	edition = "2021",
+	exec_triple = "x86_64-unknown-linux-gnu",
+	extra_target_triples = ["riscv64gc-unknown-none-elf"],
+	iso_date = "2023-02-26",
+	versions = ["nightly/2023-02-26", "1.67.1"],
 )
+rustfmt_toolchain_repository(
+	name = "rustfmt_linux_x86_64",
+	version = "1.67.1",
+	exec_triple = "x86_64-unknown-linux-gnu",
+)
+register_toolchains("@rustfmt_linux_x86_64//:toolchain")
+
 
 load("//:deps.bzl", "salus_dependencies")
 
